@@ -1,3 +1,14 @@
+/**
+ * @fileoverview Página de Productos.
+ *   Renderiza la tabla de productos con metadata dinámica para SEO.
+ * @module app/products/page
+ *
+ * @description
+ * - Server Component que genera metadata y renderiza ProductsTable
+ * - Análogo a categories/page.tsx pero con productos
+ * - Sigue el patrón de composición Server + Client Components
+ */
+
 import type { Metadata } from "next";
 
 import {
@@ -6,6 +17,10 @@ import {
 } from "@/lib/seo";
 import { ProductsTable } from "@/features/products/components/table";
 
+/**
+ * Genera metadata específica para la página de productos.
+ * Se ejecuta en el servidor antes del renderizado.
+ */
 export async function generateMetadata(): Promise<Metadata> {
     const title = await generateAsyncTitle("Productos");
     const description = await generateAsyncDescription(
@@ -17,6 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
+/**
+ * Página de productos — componente servidor que renderiza la tabla.
+ * ProductsTable es un Client Component que maneja fetching, estado y UI.
+ */
 export default function ProductsPage() {
     return (
         <>

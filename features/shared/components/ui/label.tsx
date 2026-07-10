@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente Label de shadcn/ui basado en Radix UI.
+ *   Incluye soporte para estados disabled del grupo/peer.
+ * @module features/shared/components/ui/label
+ */
+
 "use client"
 
 import * as React from "react"

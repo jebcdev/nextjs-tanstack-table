@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Componente Button de shadcn/ui con variantes y tamaños.
+ *   Usa class-variance-authority (cva) para definir variantes y
+ *   Slot de Radix para polymorphic rendering (asChild).
+ * @module features/shared/components/ui/button
+ *
+ * @description
+ * - Variantes: default, outline, secondary, ghost, destructive, link
+ * - Tamaños: default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg
+ * - Soporta asChild para renderizar como otro elemento (Link, etc.)
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"

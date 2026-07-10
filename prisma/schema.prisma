@@ -1,7 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// ============================================================================
+// @fileoverview Esquema Prisma para la base de datos PostgreSQL.
+//   Define los modelos Category y Product con relación 1:N.
+//
+// @description
+// - Modelos mapeados a tablas: categories, products
+// - IDs UUID v4 autogenerados
+// - Timestamps createdAt/updatedAt automáticos
+// - Índices en campos de búsqueda frecuente
+// - Relación Category → Product con onDelete: Restrict
+// ============================================================================
 
 generator client {
   provider = "prisma-client"
@@ -12,7 +19,13 @@ datasource db {
   provider = "postgresql"
 }
 
-
+// ---------------------------------------------------------------------------
+// Modelo Category
+// - isActive: controla visibilidad (default: true)
+// - name: único (combinado con @@unique)
+// - slug: único para URLs amigables
+// - products: relación 1:N con Product
+// ---------------------------------------------------------------------------
 model Category {
   id          String    @id @default(uuid()) @map("id")
   name        String    @map("name")
@@ -28,6 +41,14 @@ model Category {
   @@map("categories")
 }
 
+// ---------------------------------------------------------------------------
+// Modelo Product
+// - categoryId: FK a Category (onDelete: Restrict — no se puede eliminar
+//   una categoría que tenga productos asociados)
+// - price: Decimal(10,2) para precisión monetaria
+// - Índices en: categoryId, name, slug, price (optimiza búsquedas)
+// - Unique compuesto: [categoryId, name] (un nombre único por categoría)
+// ---------------------------------------------------------------------------
 model Product {
   id          String    @id @default(uuid()) @map("id")
   categoryId  String    @map("category_id")

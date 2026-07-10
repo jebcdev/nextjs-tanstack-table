@@ -1,4 +1,15 @@
-// features/categories/components/categories-columns.tsx
+/**
+ * @fileoverview Definición de columnas para la tabla de categorías.
+ *   Cada columna define header, acceso a datos, renderizado y
+ *   ordenamiento. Incluye columna de acciones (Ver, Editar, Eliminar).
+ * @module features/categories/components/table/categories-columns
+ *
+ * @description
+ * - Columnas: Acciones, Nombre, Slug, Descripción, Estado, Creado
+ * - Header ordenable con indicadores visuales (asc/desc/neutral)
+ * - Acciones actualmente son placeholders con toasts informativos
+ */
+
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -13,11 +24,18 @@ import {
     ArrowDown,
 } from "@phosphor-icons/react";
 
-// Helper para armar el description del toast con la data de la fila clickeada
+/**
+ * Construye texto descriptivo de la categoría para el toast.
+ * @param category - Datos de la categoría
+ * @returns String con formato: Nombre · Slug · Activo: Sí/No
+ */
 const buildDescription = (category: Category) =>
     `Nombre: ${category.name} · Slug: ${category.slug} · Activo: ${
         category.isActive ? "Sí" : "No"
     }`;
+
+// Handlers de acciones — actualmente son placeholders informativos
+// TODO: Implementar lógica real de CRUD cuando se conecten los formularios
 
 const handleView = (category: Category) => {
     toast.info(`Detalle de "${category.name}"`, {
@@ -52,7 +70,14 @@ const handleDelete = (category: Category) => {
     });
 };
 
-// Header reutilizable con indicador de orden (asc/desc/sin orden)
+/**
+ * Componente de header ordenable para columnas de la tabla.
+ * Muestra icono de orden ascendente, descendente o neutral.
+ *
+ * @param {Object} props
+ * @param {string} props.label - Texto del header
+ * @param {Column<Category, unknown>} props.column - Columna de TanStack Table
+ */
 function SortableHeader({
     label,
     column,
@@ -63,6 +88,7 @@ function SortableHeader({
     const sorted = column.getIsSorted();
 
     const handleSort = () => {
+        // toggleSorting(true) ordena desc si está asc, o viceversa
         column.toggleSorting(sorted === "asc");
     };
 

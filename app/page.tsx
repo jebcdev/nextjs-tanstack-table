@@ -1,9 +1,23 @@
+/**
+ * @fileoverview Página de inicio con temática cyberpunk/Matrix.
+ *   Muestra un canvas con efecto Matrix rain, animación de glitch,
+ *   y tarjetas de navegación a las secciones principales.
+ * @module app/page
+ *
+ * @description
+ * - Propósito: Landing page visual impactante como puerta de entrada
+ * - Funcionalidades: Matrix rain (canvas), glitch text, navegación
+ * - Dependencias: Phosphor Icons, Next.js Link
+ * - Patrones: Client Component con múltiples efectos visuales
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 
+// Rutas de navegación disponibles desde la landing
 const NAV_ITEMS = [
   { href: "/categories", label: "Categorías", desc: "Explorar y gestionar categorías de productos" },
   { href: "/products", label: "Productos", desc: "Catálogo completo con filtros y paginación" },
@@ -13,6 +27,7 @@ export default function HomePage() {
   const [displayText, setDisplayText] = useState("");
   const fullText = "TanStack Query + TanStack Table · Data Driven · SSR";
 
+  // Efecto de máquina de escribir en el subtítulo
   useEffect(() => {
     document.title = "Inicio | NextJS Tanstack Query|Table";
     let i = 0;
@@ -24,12 +39,14 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Efecto Matrix rain en canvas — renderiza katakana y dígitos
   useEffect(() => {
     const canvas = document.getElementById("rain-canvas") as HTMLCanvasElement;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Ajusta tamaño del canvas al viewport
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -42,6 +59,7 @@ export default function HomePage() {
     const chars =
       "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789";
 
+    // Dibuja una frame de la lluvia de caracteres
     const draw = () => {
       ctx.fillStyle = "rgba(10, 0, 21, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);

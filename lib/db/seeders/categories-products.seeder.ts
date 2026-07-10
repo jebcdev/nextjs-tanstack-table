@@ -1,9 +1,23 @@
+/**
+ * @fileoverview Seeder que limpia y crea datos de prueba.
+ *   Genera 5 categorías y 30 productos (6 por categoría)
+ *   con datos realistas del sector tecnológico en COP.
+ * @module lib/db/seeders/categories-products
+ *
+ * @description
+ * 1. Elimina todos los productos y categorías existentes
+ * 2. Crea 5 categorías tecnológicas en paralelo
+ * 3. Crea 6 productos por categoría (30 total) secuencialmente
+ * 4. Retorna resumen de lo creado
+ */
+
 import { prismaDB } from "@/lib/db/prismaDB";
 
 export const seedCategoriesAndProducts = async () => {
     try {
         console.log("🗑️  Cleaning categories and products...");
 
+        // Limpiar en orden inverso por las FK
         await prismaDB.product.deleteMany({});
         await prismaDB.category.deleteMany({});
 
@@ -38,6 +52,7 @@ export const seedCategoriesAndProducts = async () => {
         ];
 
         console.log("📂 Creating categories...");
+        // Crear categorías en paralelo para mejor performance
         const categories = await Promise.all(
             categoriesData.map((cat) =>
                 prismaDB.category.create({ data: cat })
@@ -261,6 +276,8 @@ export const seedCategoriesAndProducts = async () => {
         console.log("📦 Creating products...");
         let totalProducts = 0;
 
+        // Los productos se crean secuencialmente para mantener el orden
+        // y porque dependen del ID de la categoría creada antes
         for (const group of productsData) {
             const category = categories[group.categoryIndex];
 

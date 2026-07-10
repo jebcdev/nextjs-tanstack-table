@@ -1,4 +1,17 @@
-// features/categories/components/categories-table.tsx
+/**
+ * @fileoverview Componente de tabla para categorías con TanStack Table.
+ *   Incluye búsqueda global con debounce, ordenamiento por columnas
+ *   y paginación completa (primera/anterior/siguiente/última).
+ * @module features/categories/components/table/categories-table
+ *
+ * @description
+ * - Client Component con estado local para sorting, filtro y paginación
+ * - Búsqueda global con debounce de 300ms
+ * - Filtro custom que busca en todos los campos relevantes
+ * - Maneja estados: carga, error, vacío, filtrado sin resultados
+ * - Paginación configurable: 5, 10, 20, 30, 50 items por página
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -23,9 +36,19 @@ import { useCategoriesQuery } from "../../queries/get-all-categories.query";
 import { categoriesColumns } from "./categories-columns";
 import { Category } from "@/lib/generated/prisma/browser";
 
+/** Array vacío constante para evitar undefined en el data de la tabla */
 const EMPTY_CATEGORIES: Category[] = [];
 
-// Filtro global custom: busca en TODOS los campos relevantes
+/**
+ * Filtro global personalizado.
+ * Busca el texto en TODOS los campos relevantes de la categoría:
+ * name, slug, description, isActive (activo/inactivo), createdAt.
+ *
+ * @param row - Fila actual con datos originales
+ * @param _columnId - ID de columna (no usado, filtro global)
+ * @param filterValue - Texto de búsqueda
+ * @returns true si alguna propiedad coincide con el texto de búsqueda
+ */
 const globalFilterFn = (
     row: { original: Category },
     _columnId: string,
@@ -53,8 +76,8 @@ export function CategoriesTable() {
     const [searchInput, setSearchInput] = useState("");
     const [globalFilter, setGlobalFilter] = useState("");
 
-    // Debounce: separa lo que el usuario escribe de lo que realmente
-    // dispara el recálculo de filas en la tabla.
+    // Debounce de 300ms: separa la escritura del usuario del recálculo
+    // de la tabla para evitar re-renderizados en cada tecla
     useEffect(() => {
         const timeout = setTimeout(() => {
             setGlobalFilter(searchInput);
@@ -76,14 +99,14 @@ export function CategoriesTable() {
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        // Configuración de paginación
         initialState: {
             pagination: {
-                pageSize: 10, // Registros por página
+                pageSize: 10,
             },
         },
     });
 
+    // Estado de error: muestra un banner rojo con el mensaje de error
     if (isError) {
         return (
             <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
@@ -94,7 +117,7 @@ export function CategoriesTable() {
 
     return (
         <div className="w-full space-y-4">
-            {/* Barra de búsqueda */}
+            {/* Barra de búsqueda global con icono lupa y botón de limpiar */}
             <div className="relative max-w-sm">
                 <MagnifyingGlass
                     size={16}
@@ -107,6 +130,7 @@ export function CategoriesTable() {
                     placeholder="Buscar en todas las columnas..."
                     className="w-full rounded-lg border border-neutral-700 bg-neutral-900 py-2 pl-9 pr-9 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
                 />
+                {/* Botón para limpiar el input solo cuando hay texto */}
                 {searchInput && (
                     <button
                         type="button"
@@ -118,9 +142,10 @@ export function CategoriesTable() {
                 )}
             </div>
 
-            {/* Tabla */}
+            {/* Contenedor de la tabla con scroll horizontal */}
             <div className="overflow-x-auto rounded-lg border border-neutral-800">
                 <table className="w-full text-sm">
+                    {/* Header sticky para que no se pierda al hacer scroll */}
                     <thead className="bg-neutral-900 sticky top-0">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
@@ -141,6 +166,7 @@ export function CategoriesTable() {
                         ))}
                     </thead>
                     <tbody>
+                        {/* Estado: carga */}
                         {isLoading ? (
                             <tr>
                                 <td
@@ -151,6 +177,7 @@ export function CategoriesTable() {
                                 </td>
                             </tr>
                         ) : table.getRowModel().rows.length === 0 ? (
+                            /* Estado: sin datos (después de carga) */
                             <tr>
                                 <td
                                     colSpan={categoriesColumns.length}
@@ -160,6 +187,7 @@ export function CategoriesTable() {
                                 </td>
                             </tr>
                         ) : (
+                            /* Estado normal: filas de datos */
                             table.getRowModel().rows.map((row) => (
                                 <tr
                                     key={row.id}
@@ -180,9 +208,9 @@ export function CategoriesTable() {
                 </table>
             </div>
 
-            {/* Paginación */}
+            {/* Barra de paginación inferior */}
             <div className="flex items-center justify-between px-2">
-                {/* Contador de resultados */}
+                {/* Contador de resultados con información de filtrado */}
                 <p className="text-xs text-neutral-500">
                     Mostrando {table.getRowModel().rows.length} de{" "}
                     {table.getFilteredRowModel().rows.length} categorías
@@ -193,7 +221,7 @@ export function CategoriesTable() {
 
                 {/* Controles de paginación */}
                 <div className="flex items-center gap-2">
-                    {/* Selector de registros por página */}
+                    {/* Selector de items por página */}
                     <select
                         value={table.getState().pagination.pageSize}
                         onChange={(e) => {
@@ -208,7 +236,7 @@ export function CategoriesTable() {
                         ))}
                     </select>
 
-                    {/* Botones de navegación */}
+                    {/* Botones: primera ← anterior | indicador | siguiente → última */}
                     <div className="flex items-center gap-1">
                         <button
                             type="button"
@@ -229,7 +257,7 @@ export function CategoriesTable() {
                             <CaretLeft size={16} />
                         </button>
 
-                        {/* Indicador de página actual */}
+                        {/* Indicador: "Página X de Y" */}
                         <span className="px-3 py-1 text-sm text-neutral-300 min-w-[80px] text-center">
                             Página {table.getState().pagination.pageIndex + 1} de{" "}
                             {table.getPageCount()}

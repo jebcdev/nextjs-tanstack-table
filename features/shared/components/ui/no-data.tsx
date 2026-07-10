@@ -1,11 +1,20 @@
+/**
+ * @fileoverview Componente de estado vacío.
+ *   Se muestra cuando no hay datos disponibles en una sección.
+ * @module features/shared/components/ui/no-data
+ *
+ * @description
+ * - Muestra icono de lupa, título y mensaje descriptivo
+ * - Ocupa al menos 60vh para evitar que se vea perdido
+ * - Animación pulse en el título
+ */
+
 "use client"
 
-// components/EmptyState.tsx
 export const NoData = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] w-full p-4 text-center">
       <div className="bg-gray-100 p-6 rounded-full mb-4">
-        {/* Un icono simple de una lupa o caja vacía */}
         <svg 
           className="w-12 h-12 text-gray-400" 
           fill="none" 

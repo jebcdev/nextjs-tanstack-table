@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente Input de shadcn/ui con estilos consistentes.
+ *   Soporta todos los tipos de input HTML y estados (disabled, invalid).
+ * @module features/shared/components/ui/input
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"

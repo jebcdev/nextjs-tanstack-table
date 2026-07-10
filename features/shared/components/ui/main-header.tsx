@@ -1,3 +1,16 @@
+/**
+ * @fileoverview Header de navegación principal.
+ *   Muestra el logo de la marca y enlaces a las rutas principales.
+ *   Detecta la ruta activa para resaltar el botón correspondiente.
+ * @module features/shared/components/ui/main-header
+ *
+ * @description
+ * - Sticky header con backdrop blur
+ * - Navegación: Inicio, Categorías, Productos
+ * - Botón activo usa variant "secondary", inactivo usa "ghost"
+ * - Usa usePathname() para determinar la ruta activa
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -5,11 +18,10 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
-
 export const MainHeader = () => {
   const pathname = usePathname();
 
-  // Definimos las rutas de navegación para mantener el código limpio y escalable
+  // Rutas de navegación — configuración centralizada para escalabilidad
   const navigationRoutes = [
     { name: "Inicio", path: "/" },
     { name: "Categorías", path: "/categories" },
@@ -26,7 +38,7 @@ export const MainHeader = () => {
           </Link>
         </div>
 
-        {/* Navegación Principal */}
+        {/* Navegación Principal — compara pathname para active state */}
         <nav className="flex items-center gap-1 sm:gap-2">
           {navigationRoutes.map((route) => {
             const isActive = pathname === route.path;

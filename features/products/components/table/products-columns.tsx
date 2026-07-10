@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Definición de columnas para la tabla de productos.
+ *   Columnas: Acciones, Nombre, Slug, Descripción, Precio, Creado.
+ *   Incluye header ordenable y formato de precio en COP.
+ * @module features/products/components/table/products-columns
+ *
+ * @description
+ * - Estructura similar a categories-columns pero con columna de precio
+ * - Precio formateado en pesos colombianos (es-CO)
+ * - Sin columna de estado (Product no tiene isActive)
+ */
+
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -12,8 +24,16 @@ import {
     ArrowDown,
 } from "@phosphor-icons/react";
 
+/**
+ * Construye texto descriptivo del producto para el toast.
+ * @param product - Datos del producto
+ * @returns String con formato: Nombre · Slug · Precio: $X.XX
+ */
 const buildDescription = (product: Product) =>
     `Nombre: ${product.name} · Slug: ${product.slug} · Precio: $${Number(product.price).toFixed(2)}`;
+
+// Handlers de acciones — placeholders informativos
+// TODO: Implementar lógica real de CRUD
 
 const handleView = (product: Product) => {
     toast.info(`Detalle de "${product.name}"`, {
@@ -48,6 +68,10 @@ const handleDelete = (product: Product) => {
     });
 };
 
+/**
+ * Componente de header ordenable para columnas de la tabla.
+ * Muestra icono de orden ascendente, descendente o neutral.
+ */
 function SortableHeader({
     label,
     column,
@@ -79,6 +103,7 @@ function SortableHeader({
 
 export const productsColumns: ColumnDef<Product>[] = [
     {
+        // Columna de acciones — no ordenable (enableSorting: false)
         id: "actions",
         header: "Acciones",
         enableSorting: false,
@@ -139,6 +164,7 @@ export const productsColumns: ColumnDef<Product>[] = [
         ),
     },
     {
+        // Precio formateado en COP con 2 decimales
         accessorKey: "price",
         header: ({ column }) => <SortableHeader label="Precio" column={column} />,
         cell: ({ row }) => (

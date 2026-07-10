@@ -1,3 +1,17 @@
+/**
+ * @fileoverview Componente de tabla para productos con TanStack Table.
+ *   Incluye búsqueda global con debounce, ordenamiento por columnas
+ *   y paginación completa (primera/anterior/siguiente/última).
+ * @module features/products/components/table/products-table
+ *
+ * @description
+ * - Análogo a CategoriesTable pero para productos
+ * - Búsqueda global con debounce de 300ms
+ * - Filtro custom que busca en: name, slug, description, price, createdAt
+ * - Estados: carga, error, vacío
+ * - Paginación configurable: 5, 10, 20, 30, 50 items
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,8 +36,13 @@ import { useProductsQuery } from "../../queries/get-all-products.query";
 import { productsColumns } from "./products-columns";
 import { Product } from "@/lib/generated/prisma/browser";
 
+/** Array vacío constante para evitar undefined en el data de la tabla */
 const EMPTY_PRODUCTS: Product[] = [];
 
+/**
+ * Filtro global personalizado para productos.
+ * Busca en: name, slug, description, price (formateado), createdAt.
+ */
 const globalFilterFn = (
     row: { original: Product },
     _columnId: string,
@@ -51,6 +70,7 @@ export function ProductsTable() {
     const [searchInput, setSearchInput] = useState("");
     const [globalFilter, setGlobalFilter] = useState("");
 
+    // Debounce de 300ms para la búsqueda global
     useEffect(() => {
         const timeout = setTimeout(() => {
             setGlobalFilter(searchInput);
@@ -79,6 +99,7 @@ export function ProductsTable() {
         },
     });
 
+    // Estado de error: muestra un banner rojo con el mensaje de error
     if (isError) {
         return (
             <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
@@ -89,6 +110,7 @@ export function ProductsTable() {
 
     return (
         <div className="w-full space-y-4">
+            {/* Barra de búsqueda global con icono lupa y botón de limpiar */}
             <div className="relative max-w-sm">
                 <MagnifyingGlass
                     size={16}
@@ -112,6 +134,7 @@ export function ProductsTable() {
                 )}
             </div>
 
+            {/* Contenedor de la tabla con scroll horizontal */}
             <div className="overflow-x-auto rounded-lg border border-neutral-800">
                 <table className="w-full text-sm">
                     <thead className="bg-neutral-900 sticky top-0">
@@ -173,6 +196,7 @@ export function ProductsTable() {
                 </table>
             </div>
 
+            {/* Barra de paginación inferior */}
             <div className="flex items-center justify-between px-2">
                 <p className="text-xs text-neutral-500">
                     Mostrando {table.getRowModel().rows.length} de{" "}

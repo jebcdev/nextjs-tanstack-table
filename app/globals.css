@@ -1,3 +1,16 @@
+/* =============================================================================
+   @fileoverview Estilos globales del proyecto.
+     Importa Tailwind CSS v4, tw-animate-css y shadcn/tailwind.
+     Define el theme inline con variables CSS para colores, fuentes y radios.
+   
+   @description
+   - Tema claro (:root) y oscuro (.dark) con valores oklch
+   - Variante dark vía clase .dark en el HTML
+   - Fuentes: Geist Sans (sans), JetBrains Mono (mono)
+   - Variables de shadcn/ui: sidebar, chart, popover, card, etc.
+   - Reset base: border en todos los elementos, body bg/text, font-mono
+   ============================================================================= */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
