@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Product } from "@/lib/generated/prisma/client";
+import { Product } from "@/lib/generated/prisma/browser";
 import { toast } from "sonner";
 import {
     Eye,

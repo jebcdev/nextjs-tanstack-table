@@ -10,11 +10,15 @@ export const getAllProductsAction = async (): Promise<
 > => {
     try {
         const products = await prismaDB.product.findMany();
+        const serializedProducts = products.map((p) => ({
+            ...p,
+            price: Number(p.price),
+        }));
         return {
             error: false,
             success: true,
             message: "Productos obtenidos correctamente",
-            data: products,
+            data: serializedProducts as unknown as Product[],
         };
     } catch (error) {
         consoleLogger("Error al obtener los productos de la base de datos en la acción getAllProductsAction", error);

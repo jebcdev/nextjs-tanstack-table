@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllProductsAction } from "../actions";
-import { Product } from "@/lib/generated/prisma/client";
+import { Product } from "@/lib/generated/prisma/browser";
 
 export const PRODUCTS_QUERY_KEY = "products" as const;
 

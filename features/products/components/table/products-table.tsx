@@ -20,7 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import { useProductsQuery } from "../../queries/get-all-products.query";
 import { productsColumns } from "./products-columns";
-import { Product } from "@/lib/generated/prisma/client";
+import { Product } from "@/lib/generated/prisma/browser";
 
 const EMPTY_PRODUCTS: Product[] = [];
 

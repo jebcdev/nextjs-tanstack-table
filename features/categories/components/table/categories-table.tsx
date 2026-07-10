@@ -21,7 +21,7 @@ import {
 } from "@phosphor-icons/react";
 import { useCategoriesQuery } from "../../queries/get-all-categories.query";
 import { categoriesColumns } from "./categories-columns";
-import { Category } from "@/lib/generated/prisma/client";
+import { Category } from "@/lib/generated/prisma/browser";
 
 const EMPTY_CATEGORIES: Category[] = [];
 

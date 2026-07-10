@@ -1,7 +1,7 @@
 // features/categories/queries/get-all-categories.query.ts
 import { useQuery } from "@tanstack/react-query";
 import { getAllCategoriesAction } from "../actions";
-import { Category } from "@/lib/generated/prisma/client";
+import { Category } from "@/lib/generated/prisma/browser";
 
 // Definir la clave del query para mejor gestión de caché
 export const CATEGORIES_QUERY_KEY = "categories" as const;

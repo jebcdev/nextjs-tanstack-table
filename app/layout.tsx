@@ -13,6 +13,7 @@ import {
 } from "@/lib/seo";
 import { Toaster } from "sonner";
 import { TanStackQueryProvider } from "@/features/shared/components";
+import { MainHeader } from "@/features/shared/components/ui";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
                     theme="dark"
                 />
                 <TanStackQueryProvider>
+                    <MainHeader />
                     {children}
                 </TanStackQueryProvider>
             </body>
