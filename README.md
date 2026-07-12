@@ -2,6 +2,8 @@
 
 Proyecto de aprendizaje integrando **TanStack Query** para manejo de estado asíncrono y **TanStack Table** para tablas de datos con filtrado, ordenamiento y paginación, sobre **Next.js 16** con **Prisma ORM** + **PostgreSQL**.
 
+[GitHub — jebcdev/nextjs-tanstack-table](https://github.com/jebcdev/nextjs-tanstack-table)
+
 ---
 
 ## Stack
@@ -12,8 +14,10 @@ Proyecto de aprendizaje integrando **TanStack Query** para manejo de estado así
 | Queries     | TanStack Query v5                   |
 | Tablas      | TanStack Table v8                   |
 | ORM         | Prisma 7 + PostgreSQL               |
+| Formularios | React Hook Form + Zod               |
 | Estilos     | Tailwind CSS v4 + tw-animate-css    |
-| UI          | Radix UI + shadcn                   |
+| UI          | Radix UI + shadcn/ui                |
+| Notificaciones | shadcn/ui Toast (sonner)         |
 | Paquetería  | pnpm                                |
 
 ---
@@ -29,7 +33,7 @@ Proyecto de aprendizaje integrando **TanStack Query** para manejo de estado así
 ## Clonar e instalar
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/jebcdev/nextjs-tanstack-table.git
 cd nextjs-tanstack-table
 
 pnpm install
@@ -46,56 +50,19 @@ cp .env.template .env
 ```
 
 ```env
-# .env
 NEXT_PUBLIC_ENVIRONMENT="development"
 DATABASE_URL="postgresql://user:password@localhost:5432/nextjs-tanstack-table?schema=public"
 ```
 
-Si usas **Neon**, la connection string la obtienes del dashboard de tu proyecto.
-
 ---
 
 ## Base de datos
-
-### 1. Generar el cliente Prisma
-
-```bash
-pnpm dlx prisma generate
-```
-
-Esto genera el cliente en `lib/generated/prisma/`.
-
-### 2. Correr migraciones
-
-```bash
-pnpm dlx prisma migrate dev --name init
-```
-
-Esto crea las tablas `categories` y `products` en tu base de datos.
-
-### 3. Sembrar datos de prueba
 
 ```bash
 pnpm seed
 ```
 
 > El script `seed` del `package.json` hace todo automáticamente: borra migraciones previas, regenera el cliente, resetea la BD, aplica migraciones y ejecuta el seeder.
-
-O si prefieres hacerlo paso a paso:
-
-```bash
-# 1. Generar cliente
-pnpm dlx prisma generate
-
-# 2. Resetear BD (borra datos + aplica migraciones)
-pnpm dlx prisma migrate reset --force
-
-# 3. Aplicar migraciones
-pnpm dlx prisma migrate dev --name full_db
-
-# 4. Ejecutar seeder
-pnpm dlx tsx lib/db/seeders/index.ts
-```
 
 ---
 
@@ -123,27 +90,92 @@ Abrir [http://localhost:3000](http://localhost:3000).
 
 ```
 app/
-├── categories/page.tsx      → Página de categorías (tabla)
-├── products/page.tsx        → Página de productos (tabla)
-├── page.tsx                 → Home cyberpunk neon
-├── layout.tsx               → Layout root
-├── globals.css              → Estilos globales + tema dark
-└── ...
+├── categories/
+│   ├── page.tsx                  → Listado con tabla
+│   ├── new/page.tsx              → Crear categoría
+│   └── [categoryId]/
+│       ├── page.tsx              → Detalle
+│       └── edit/page.tsx         → Editar
+├── products/
+│   ├── page.tsx                  → Listado con tabla
+│   ├── new/page.tsx              → Crear producto
+│   └── [productId]/
+│       ├── page.tsx              → Detalle
+│       └── edit/page.tsx         → Editar
+├── page.tsx                      → Home
+├── layout.tsx                    → Layout root
+└── globals.css                   → Estilos globales + tema dark
 
 features/
-├── categories/              → Feature categorías (actions, queries, components/table)
-├── products/                → Feature productos (actions, queries, components/table)
-└── shared/                  → Componentes compartidos (ui/, providers, types)
-
-lib/
-├── db/prismaDB.ts           → Conexión Prisma
-├── db/seeders/              → Seeders de datos
-├── generated/prisma/        → Cliente Prisma generado (no se版的)
-└── ...
+├── categories/                   → Feature completa
+│   ├── actions/                  → Server Actions (CRUD)
+│   ├── components/
+│   │   ├── table/                → Tabla + columnas (TanStack Table)
+│   │   ├── categories-header.tsx → Header con Volver/Nuevo
+│   │   ├── category-form.tsx     → Formulario (React Hook Form + Zod)
+│   │   ├── category-detail.tsx   → Vista detalle
+│   │   ├── create-category-form-container.tsx  → Wrapper mutación
+│   │   └── update-category-form-container.tsx  → Wrapper mutación
+│   ├── queries/                  → TanStack Query hooks
+│   └── validations/              → Schemas Zod
+├── products/                     → Feature completa (misma estructura)
+└── shared/                       → Componentes compartidos
+    ├── components/ui/            → shadcn/ui (Button, Input, Dialog, etc.)
+    ├── types/                    → IGeneralResponse<T>
+    └── ...
 
 prisma/
-├── schema.prisma            → Schema de datos
-└── migrations/              → Migraciones SQL
+├── schema.prisma                 → Modelos Category y Product (1:N)
+└── migrations/                   → Migraciones SQL
+```
+
+---
+
+## Features implementadas
+
+### CRUD de Categorías
+- **Validaciones** Zod: name (3-50 chars), description (max 200), isActive
+- **Server Actions**: create, update, get-by-id, delete (con verificación de productos asociados)
+- **TanStack Query**: queries con staleTime 10min, mutations con invalidación de cache y toasts
+- **Tabla**: TanStack Table con ordenamiento, filtro global con debounce, paginación
+- **Formulario**: React Hook Form + zodResolver, validación en blur
+- **Detalle**: nombre, slug, badge activo/inactivo, descripción, metadatos
+
+### CRUD de Productos
+- **Validaciones** Zod: name (3-50 chars), description (max 200), price (positivo, 2 decimales), categoryId
+- **Server Actions**: create, update, get-by-id (incluye categoría), delete
+- **TanStack Query**: queries con staleTime 10min, mutations con invalidación de cache y toasts
+- **Tabla**: TanStack Table con columna de precio formateado en COP
+- **Formulario**: selector de categorías (Radix UI Select), precio con step 0.01
+- **Detalle**: nombre, slug, precio COP, badge de categoría, metadatos
+
+### Navegación
+- **CategoriesHeader / ProductsHeader**: componente reutilizable con:
+  - Botón "Volver" (icono ArrowLeft) → /categories o /products
+  - Botón "Nuevo" (icono Plus) → /new
+- Headers usados en todas las páginas (listado, nuevo, detalle, editar)
+
+### Acciones en tablas
+- **Ver** → Navega al detalle (`/[id]`)
+- **Editar** → Navega al formulario de edición (`/[id]/edit`)
+- **Eliminar** → Diálogo de confirmación (`ConfirmDeleteDialog`) con mutación TanStack Query
+
+### Mutaciones con feedback
+- Los formularios usan **contenedores Client Component** que delegan en los hooks de mutación
+- Cada mutación exitosa: invalida el cache de TanStack Query + muestra toast success
+- Cada error: muestra toast error sin invalidar cache
+- El diálogo de eliminar solo se cierra si la operación fue exitosa
+
+---
+
+## Patrón de respuesta unificado
+
+Todas las Server Actions retornan `IGeneralResponse<T>`:
+
+```typescript
+type IGeneralResponse<T = undefined> =
+  | { success: true;  error?: false; message: string; data: T      }
+  | { success: false; error: true;   message: string; data?: never };
 ```
 
 ---
@@ -151,10 +183,16 @@ prisma/
 ## Aprendizajes cubiertos
 
 - [x] TanStack Query: `useQuery`, `staleTime`, `gcTime`, server actions como queryFn
+- [x] TanStack Query: `useMutation`, invalidación de cache en éxito, toasts de feedback
 - [x] TanStack Table: ordenamiento, filtro global con debounce, paginación
 - [x] Prisma + PostgreSQL con Neon adapter
 - [x] Server Actions con patrón response unificado (`IGeneralResponse`)
-- [x] shadcn/ui + Radix + Tailwind v4
+- [x] Zod: validación compartida cliente y servidor
+- [x] React Hook Form + zodResolver
+- [x] shadcn/ui: Button, Input, Label, Textarea, Select, Dialog, Badge, Toast
+- [x] Radix UI: Select, Dialog, Slot (asChild)
 - [x] SEO dinámico con metadatos async
 - [x] Manejo de errores y estados vacíos
+- [x] Navegación con headers reutilizables
+- [x] Confirmación antes de eliminar con diálogo modal
 - [x] Dark mode fijo con estética cyberpunk
