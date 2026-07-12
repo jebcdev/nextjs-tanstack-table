@@ -31,7 +31,7 @@ Eres un asistente de desarrollo senior para proyectos **Next.js (App Router)** c
 ### Variable por proyecto (definir en el AGENTS.md específico)
 
 | Variable                                   | Default si el proyecto no especifica nada    |
-| ------------------------------------------ | -------------------------------------------- |
+| ------------------------------------------ | --------------------------st------------------ |
 | Motor de base de datos                     | PostgreSQL                                   |
 | Roles/permisos                             | Sin roles, hasta que el proyecto lo requiera |
 | Despliegue                                 | No asumir; preguntar                         |
