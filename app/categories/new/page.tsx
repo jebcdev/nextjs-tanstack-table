@@ -3,12 +3,9 @@
  * @module app/categories/new/page
  */
 
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { generateAsyncTitle, generateAsyncDescription } from "@/lib/seo";
-import { createCategoryAction } from "@/features/categories/actions";
-import { CategoryForm } from "@/features/categories/components";
-import type { CategoryFormData } from "@/features/categories/validations";
+import { CategoriesHeader, CreateCategoryFormContainer } from "@/features/categories/components";
 
 export async function generateMetadata(): Promise<Metadata> {
     const title = await generateAsyncTitle("Nueva Categoría");
@@ -19,24 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function NewCategoryPage() {
-    async function handleSubmit(data: CategoryFormData) {
-        "use server";
-        const result = await createCategoryAction(data);
-        if (result.success) {
-            redirect("/categories");
-        }
-        return result;
-    }
-
     return (
-        <div className="container mx-auto max-w-4xl py-10">
+        <div className="container mx-auto max-w-4xl py-10 space-y-6">
+            <CategoriesHeader title="Nueva Categoría" showBack />
             <div className="rounded-none border border-border bg-card p-6">
-                <h1 className="mb-6 text-lg font-semibold">Nueva Categoría</h1>
-                <CategoryForm
-                    onSubmit={handleSubmit}
-                    submitLabel="Crear categoría"
-                    cancelHref="/categories"
-                />
+                <CreateCategoryFormContainer />
             </div>
         </div>
     );

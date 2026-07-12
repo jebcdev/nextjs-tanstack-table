@@ -1,10 +1,7 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { prismaDB } from "@/lib/db/prismaDB";
 import { generateAsyncTitle, generateAsyncDescription } from "@/lib/seo";
-import { createProductAction } from "@/features/products/actions";
-import { ProductForm } from "@/features/products/components";
-import type { ProductFormData } from "@/features/products/validations";
+import { ProductsHeader, CreateProductFormContainer } from "@/features/products/components";
 
 export async function generateMetadata(): Promise<Metadata> {
     const title = await generateAsyncTitle("Nuevo Producto");
@@ -20,25 +17,11 @@ export default async function NewProductPage() {
         orderBy: { name: "asc" },
     });
 
-    async function handleSubmit(data: ProductFormData) {
-        "use server";
-        const result = await createProductAction(data);
-        if (result.success) {
-            redirect("/products");
-        }
-        return result;
-    }
-
     return (
-        <div className="container mx-auto max-w-4xl py-10">
+        <div className="container mx-auto max-w-4xl py-10 space-y-6">
+            <ProductsHeader title="Nuevo Producto" showBack />
             <div className="rounded-none border border-border bg-card p-6">
-                <h1 className="mb-6 text-lg font-semibold">Nuevo Producto</h1>
-                <ProductForm
-                    categories={categories}
-                    onSubmit={handleSubmit}
-                    submitLabel="Crear producto"
-                    cancelHref="/products"
-                />
+                <CreateProductFormContainer categories={categories} />
             </div>
         </div>
     );

@@ -3,12 +3,11 @@
  * @module app/categories/[categoryId]/edit/page
  */
 
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateAsyncTitle, generateAsyncDescription } from "@/lib/seo";
-import { getCategoryByIdAction, updateCategoryAction } from "@/features/categories/actions";
-import { CategoryForm } from "@/features/categories/components";
-import type { CategoryFormData } from "@/features/categories/validations";
+import { getCategoryByIdAction } from "@/features/categories/actions";
+import { CategoriesHeader, UpdateCategoryFormContainer } from "@/features/categories/components";
 
 interface EditCategoryPageProps {
     params: Promise<{ categoryId: string }>;
@@ -38,28 +37,17 @@ export default async function EditCategoryPage({
 
     const category = response.data;
 
-    async function handleSubmit(data: CategoryFormData) {
-        "use server";
-        const result = await updateCategoryAction(categoryId, data);
-        if (result.success) {
-            redirect(`/categories/${categoryId}`);
-        }
-        return result;
-    }
-
     return (
-        <div className="container mx-auto max-w-4xl py-10">
+        <div className="container mx-auto max-w-4xl py-10 space-y-6">
+            <CategoriesHeader title="Editar Categoría" showBack />
             <div className="rounded-none border border-border bg-card p-6">
-                <h1 className="mb-6 text-lg font-semibold">Editar Categoría</h1>
-                <CategoryForm
+                <UpdateCategoryFormContainer
+                    categoryId={categoryId}
                     defaultValues={{
                         name: category.name,
                         description: category.description,
                         isActive: category.isActive,
                     }}
-                    onSubmit={handleSubmit}
-                    submitLabel="Guardar cambios"
-                    cancelHref={`/categories/${categoryId}`}
                 />
             </div>
         </div>

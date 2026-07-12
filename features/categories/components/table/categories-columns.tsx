@@ -12,9 +12,11 @@
 
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Category } from "@/lib/generated/prisma/browser";
-import { toast } from "sonner";
+import { useDeleteCategoryMutation } from "../../queries";
+import { ConfirmDeleteDialog } from "@/features/shared/components/ui/confirm-delete-dialog";
 import {
     Eye,
     PencilSimple,
@@ -23,52 +25,6 @@ import {
     ArrowUp,
     ArrowDown,
 } from "@phosphor-icons/react";
-
-/**
- * Construye texto descriptivo de la categoría para el toast.
- * @param category - Datos de la categoría
- * @returns String con formato: Nombre · Slug · Activo: Sí/No
- */
-const buildDescription = (category: Category) =>
-    `Nombre: ${category.name} · Slug: ${category.slug} · Activo: ${
-        category.isActive ? "Sí" : "No"
-    }`;
-
-// Handlers de acciones — actualmente son placeholders informativos
-// TODO: Implementar lógica real de CRUD cuando se conecten los formularios
-
-const handleView = (category: Category) => {
-    toast.info(`Detalle de "${category.name}"`, {
-        duration: 4000,
-        description: buildDescription(category),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
-
-const handleEdit = (category: Category) => {
-    toast.info(`Editar "${category.name}"`, {
-        duration: 4000,
-        description: buildDescription(category),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
-
-const handleDelete = (category: Category) => {
-    toast.info(`Eliminar "${category.name}"`, {
-        duration: 4000,
-        description: buildDescription(category),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
 
 /**
  * Componente de header ordenable para columnas de la tabla.
@@ -108,39 +64,52 @@ function SortableHeader({
     );
 }
 
+function ActionsCell({ category }: { category: Category }) {
+    const router = useRouter();
+    const deleteMutation = useDeleteCategoryMutation();
+
+    return (
+        <div className="flex items-center gap-2">
+            <button
+                type="button"
+                onClick={() => router.push(`/categories/${category.id}`)}
+                className="p-1.5 rounded-md hover:bg-neutral-700 text-blue-400 hover:text-blue-300 transition-colors"
+                title="Ver detalle"
+            >
+                <Eye size={16} weight="bold" />
+            </button>
+            <button
+                type="button"
+                onClick={() => router.push(`/categories/${category.id}/edit`)}
+                className="p-1.5 rounded-md hover:bg-neutral-700 text-amber-400 hover:text-amber-300 transition-colors"
+                title="Editar"
+            >
+                <PencilSimple size={16} weight="bold" />
+            </button>
+            <ConfirmDeleteDialog
+                title="Eliminar categoría"
+                description={`¿Estás seguro de eliminar "${category.name}"? Esta acción no se puede deshacer.`}
+                trigger={
+                    <button
+                        type="button"
+                        className="p-1.5 rounded-md hover:bg-neutral-700 text-red-400 hover:text-red-300 transition-colors"
+                        title="Eliminar"
+                    >
+                        <Trash size={16} weight="bold" />
+                    </button>
+                }
+                onConfirm={() => deleteMutation.mutateAsync(category.id)}
+            />
+        </div>
+    );
+}
+
 export const categoriesColumns: ColumnDef<Category>[] = [
     {
         id: "actions",
         header: "Acciones",
         enableSorting: false,
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <button
-                    type="button"
-                    onClick={() => handleView(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-blue-400 hover:text-blue-300 transition-colors"
-                    title="Ver detalle"
-                >
-                    <Eye size={16} weight="bold" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleEdit(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-amber-400 hover:text-amber-300 transition-colors"
-                    title="Editar"
-                >
-                    <PencilSimple size={16} weight="bold" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleDelete(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-red-400 hover:text-red-300 transition-colors"
-                    title="Eliminar"
-                >
-                    <Trash size={16} weight="bold" />
-                </button>
-            </div>
-        ),
+        cell: ({ row }) => <ActionsCell category={row.original} />,
     },
     {
         accessorKey: "name",

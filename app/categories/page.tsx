@@ -15,6 +15,7 @@ import {
     generateAsyncTitle,
     generateAsyncDescription,
 } from "@/lib/seo";
+import { CategoriesHeader } from "@/features/categories/components";
 import { CategoriesTable } from "@/features/categories/components/table";
 
 /**
@@ -38,10 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default function CategoriesPage() {
     return (
-        <>
-            <div className="p-4">
+        <div className="p-4 space-y-4">
+            <CategoriesHeader title="Categorías" showNew />
             <CategoriesTable />
-            </div>
-        </>
+        </div>
     );
 }

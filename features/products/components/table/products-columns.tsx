@@ -12,9 +12,11 @@
 
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Product } from "@/lib/generated/prisma/browser";
-import { toast } from "sonner";
+import { useDeleteProductMutation } from "../../queries";
+import { ConfirmDeleteDialog } from "@/features/shared/components/ui/confirm-delete-dialog";
 import {
     Eye,
     PencilSimple,
@@ -23,50 +25,6 @@ import {
     ArrowUp,
     ArrowDown,
 } from "@phosphor-icons/react";
-
-/**
- * Construye texto descriptivo del producto para el toast.
- * @param product - Datos del producto
- * @returns String con formato: Nombre · Slug · Precio: $X.XX
- */
-const buildDescription = (product: Product) =>
-    `Nombre: ${product.name} · Slug: ${product.slug} · Precio: $${Number(product.price).toFixed(2)}`;
-
-// Handlers de acciones — placeholders informativos
-// TODO: Implementar lógica real de CRUD
-
-const handleView = (product: Product) => {
-    toast.info(`Detalle de "${product.name}"`, {
-        duration: 4000,
-        description: buildDescription(product),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
-
-const handleEdit = (product: Product) => {
-    toast.info(`Editar "${product.name}"`, {
-        duration: 4000,
-        description: buildDescription(product),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
-
-const handleDelete = (product: Product) => {
-    toast.info(`Eliminar "${product.name}"`, {
-        duration: 4000,
-        description: buildDescription(product),
-        action: {
-            label: "Entendido",
-            onClick: () => toast.dismiss(),
-        },
-    });
-};
 
 /**
  * Componente de header ordenable para columnas de la tabla.
@@ -101,40 +59,52 @@ function SortableHeader({
     );
 }
 
+function ActionsCell({ product }: { product: Product }) {
+    const router = useRouter();
+    const deleteMutation = useDeleteProductMutation();
+
+    return (
+        <div className="flex items-center gap-2">
+            <button
+                type="button"
+                onClick={() => router.push(`/products/${product.id}`)}
+                className="p-1.5 rounded-md hover:bg-neutral-700 text-blue-400 hover:text-blue-300 transition-colors"
+                title="Ver detalle"
+            >
+                <Eye size={16} weight="bold" />
+            </button>
+            <button
+                type="button"
+                onClick={() => router.push(`/products/${product.id}/edit`)}
+                className="p-1.5 rounded-md hover:bg-neutral-700 text-amber-400 hover:text-amber-300 transition-colors"
+                title="Editar"
+            >
+                <PencilSimple size={16} weight="bold" />
+            </button>
+            <ConfirmDeleteDialog
+                title="Eliminar producto"
+                description={`¿Estás seguro de eliminar "${product.name}"? Esta acción no se puede deshacer.`}
+                trigger={
+                    <button
+                        type="button"
+                        className="p-1.5 rounded-md hover:bg-neutral-700 text-red-400 hover:text-red-300 transition-colors"
+                        title="Eliminar"
+                    >
+                        <Trash size={16} weight="bold" />
+                    </button>
+                }
+                onConfirm={() => deleteMutation.mutateAsync(product.id)}
+            />
+        </div>
+    );
+}
+
 export const productsColumns: ColumnDef<Product>[] = [
     {
-        // Columna de acciones — no ordenable (enableSorting: false)
         id: "actions",
         header: "Acciones",
         enableSorting: false,
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <button
-                    type="button"
-                    onClick={() => handleView(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-blue-400 hover:text-blue-300 transition-colors"
-                    title="Ver detalle"
-                >
-                    <Eye size={16} weight="bold" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleEdit(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-amber-400 hover:text-amber-300 transition-colors"
-                    title="Editar"
-                >
-                    <PencilSimple size={16} weight="bold" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleDelete(row.original)}
-                    className="p-1.5 rounded-md hover:bg-neutral-700 text-red-400 hover:text-red-300 transition-colors"
-                    title="Eliminar"
-                >
-                    <Trash size={16} weight="bold" />
-                </button>
-            </div>
-        ),
+        cell: ({ row }) => <ActionsCell product={row.original} />,
     },
     {
         accessorKey: "name",

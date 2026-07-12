@@ -15,6 +15,7 @@ import {
     generateAsyncTitle,
     generateAsyncDescription,
 } from "@/lib/seo";
+import { ProductsHeader } from "@/features/products/components";
 import { ProductsTable } from "@/features/products/components/table";
 
 /**
@@ -38,10 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default function ProductsPage() {
     return (
-        <>
-            <div className="p-4">
+        <div className="p-4 space-y-4">
+            <ProductsHeader title="Productos" showNew />
             <ProductsTable />
-            </div>
-        </>
+        </div>
     );
 }

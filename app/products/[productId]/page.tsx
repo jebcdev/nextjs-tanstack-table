@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateAsyncTitle, generateAsyncDescription } from "@/lib/seo";
 import { getProductByIdAction } from "@/features/products/actions";
-import { ProductDetail } from "@/features/products/components";
+import { ProductsHeader, ProductDetail } from "@/features/products/components";
 
 interface ProductDetailPageProps {
     params: Promise<{ productId: string }>;
@@ -33,7 +33,8 @@ export default async function ProductDetailPage({
     const product = response.data;
 
     return (
-        <div className="container mx-auto max-w-4xl py-10">
+        <div className="container mx-auto max-w-4xl py-10 space-y-6">
+            <ProductsHeader title="Detalle de Producto" showBack />
             <div className="rounded-none border border-border bg-card p-6">
                 <ProductDetail
                     product={product}

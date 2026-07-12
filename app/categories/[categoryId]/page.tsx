@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateAsyncTitle, generateAsyncDescription } from "@/lib/seo";
 import { getCategoryByIdAction } from "@/features/categories/actions";
-import { CategoryDetail } from "@/features/categories/components";
+import { CategoriesHeader, CategoryDetail } from "@/features/categories/components";
 
 interface CategoryDetailPageProps {
     params: Promise<{ categoryId: string }>;
@@ -38,7 +38,8 @@ export default async function CategoryDetailPage({
     const category = response.data;
 
     return (
-        <div className="container mx-auto max-w-4xl py-10">
+        <div className="container mx-auto max-w-4xl py-10 space-y-6">
+            <CategoriesHeader title="Detalle de Categoría" showBack />
             <div className="rounded-none border border-border bg-card p-6">
                 <CategoryDetail
                     category={category}

@@ -19,6 +19,7 @@ export const deleteProductAction = async (
             error: false,
             success: true,
             message: "Producto eliminado exitosamente",
+            data: void 0,
         };
     } catch (error) {
         consoleLogger("Error al eliminar producto", error);

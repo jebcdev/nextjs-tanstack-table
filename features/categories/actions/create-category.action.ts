@@ -36,6 +36,8 @@ export const createCategoryAction = async (
             },
         });
 
+        consoleLogger("Category created", category);
+
         revalidatePath("/categories");
 
         return {
