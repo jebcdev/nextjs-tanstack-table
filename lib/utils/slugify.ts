@@ -12,8 +12,8 @@
  * - Elimina guiones múltiples e iniciales/finales
  *
  * @remarks
- * Actualmente no se usa en el proyecto (los slugs se definen manualmente).
- * Sería útil si se implementa creación/edición de registros.
+ * Se usa en las Server Actions de categorías para generar slugs automáticos
+ * a partir del nombre durante creación y edición.
  */
 
 const CHAR_MAP: Record<string, string> = {
